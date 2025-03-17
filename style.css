@@ -148,10 +148,10 @@ body, html {
   
 /* Player visibility and size */
 #player {
-    width: 70px; /* Increase player size */
-    height: 70px;
+    width: 30px; /* Increase player size */
+    height: 40px;
     background: linear-gradient(145deg, #00b0ff, #00a1e7); /* Robot-like gradient */
-    border-radius: 15px;
+    border-radius: 25px;
     position: absolute;
     top: 0;
     left: 0;
