@@ -19,6 +19,9 @@ const player = {
   dx: 0
 };
 
+let touchStartX = 0;  // Stores the initial X position of touch
+let isDragging = false; // Flag to check if the player is dragging
+
 function startGame() {
     playerName = document.getElementById("playerNameInput").value || "Player";
     document.getElementById("welcomeScreen").style.display = "none";
@@ -94,11 +97,29 @@ function createObstacle() {
 
 setInterval(createObstacle, 1000);
 
-// Movement control
-document.getElementById("leftButton").addEventListener("touchstart", () => player.dx = -player.speed);
-document.getElementById("rightButton").addEventListener("touchstart", () => player.dx = player.speed);
-document.getElementById("leftButton").addEventListener("touchend", () => player.dx = 0);
-document.getElementById("rightButton").addEventListener("touchend", () => player.dx = 0);
+// Touch event listeners for dragging
+canvas.addEventListener("touchstart", (e) => {
+    touchStartX = e.touches[0].clientX;
+    isDragging = true;
+});
+
+canvas.addEventListener("touchmove", (e) => {
+    if (isDragging) {
+        const touchMoveX = e.touches[0].clientX;
+        const dx = touchMoveX - touchStartX;
+        player.x += dx;
+
+        // Prevent the player from moving out of bounds
+        if (player.x < 0) player.x = 0;
+        if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
+
+        touchStartX = touchMoveX; // Update the start position for the next frame
+    }
+});
+
+canvas.addEventListener("touchend", () => {
+    isDragging = false;
+});
 
 // Game loop for updating the game every frame
 function gameLoop() {
@@ -106,12 +127,6 @@ function gameLoop() {
         ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas each frame
         updateObstacles(); // Move obstacles
         drawObstacles(); // Draw obstacles
-        player.x += player.dx; // Update player position
-
-        // Ensure player stays within canvas bounds
-        if (player.x < 0) player.x = 0;
-        if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
-
         drawPlayer(); // Update player position on screen
         requestAnimationFrame(gameLoop); // Call gameLoop recursively to animate
     }
